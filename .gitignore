@@ -1,0 +1,33 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Foundry build artifacts
+out/
+cache/
+
+# Broadcast files (may contain sensitive data)
+broadcast/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# Temporary and example files
+nft-template-example.html
+erc1967proxy_standard_json.json
+/tmp/
+
+# Documentation - exclude temporary verification docs
+documentation/PROXY_VERIFICATION.md
+documentation/VERIFICATION_STATUS.md
+documentation/VERIFICATION.md
