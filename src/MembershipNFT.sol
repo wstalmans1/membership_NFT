@@ -30,11 +30,15 @@ contract MembershipNFT is
 
     uint256 private _tokenIdTracker;
     mapping(address => bool) public hasMinted;
+    
+    // Delegation tracking: maps delegate address to list of addresses that delegated to them
+    mapping(address => address[]) public delegators;
 
     event MemberMinted(address indexed to, uint256 tokenId, uint256 amountPaid);
     event MemberRevoked(address indexed member, uint256 tokenId);
     event TreasuryUpdated(address indexed treasury);
     event ConstitutionUpdated(address indexed constitution);
+    event DelegationReturned(address indexed delegator, address indexed previousDelegate, uint256 timestamp);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -72,6 +76,7 @@ contract MembershipNFT is
         _safeMint(msg.sender, tokenId);
 
         // Auto-delegate to self to activate voting power
+        // This will track delegators automatically via our override
         delegate(msg.sender);
 
         (bool sent,) = treasury.call{value: msg.value}("");
@@ -79,13 +84,126 @@ contract MembershipNFT is
 
         emit MemberMinted(msg.sender, tokenId, msg.value);
     }
+    
+    // --- Delegation tracking ---
+    
+    /**
+     * @dev Override delegate function to track delegators on-chain
+     */
+    function delegate(address delegatee) public virtual override {
+        address account = msg.sender;
+        address currentDelegate = delegates(account);
+        
+        // Remove from old delegate's list
+        if (currentDelegate != address(0)) {
+            removeFromDelegators(currentDelegate, account);
+        }
+        
+        // Add to new delegate's list (if not delegating to zero address)
+        if (delegatee != address(0)) {
+            delegators[delegatee].push(account);
+        }
+        
+        // Call parent delegate function
+        super.delegate(delegatee);
+    }
+    
+    /**
+     * @dev Remove a delegator from a delegate's list
+     */
+    function removeFromDelegators(address delegateAddress, address delegator) internal {
+        address[] storage list = delegators[delegateAddress];
+        uint256 length = list.length;
+        for (uint256 i = 0; i < length; i++) {
+            if (list[i] == delegator) {
+                // Move last element to current position
+                list[i] = list[length - 1];
+                // Remove last element
+                list.pop();
+                break;
+            }
+        }
+    }
+    
+    /**
+     * @dev Get the number of delegators for a given delegate
+     */
+    function getDelegatorCount(address delegateAddress) public view returns (uint256) {
+        return delegators[delegateAddress].length;
+    }
 
     // --- Revocation / burn ---
+    
+    /**
+     * @dev Handle delegation cleanup before burning an NFT
+     * This ensures delegators maintain control and no voting power is orphaned
+     */
+    function _handleDelegationCleanup(address owner) internal {
+        // Get all addresses that delegated to this address
+        address[] memory delegatorsList = delegators[owner];
+        
+        // For each delegator, redelegate to themselves (auto-activate their voting power)
+        for (uint256 i = 0; i < delegatorsList.length; i++) {
+            address delegator = delegatorsList[i];
+            
+            // Skip if delegator's NFT was also burned (shouldn't happen, but safety check)
+            if (balanceOf(delegator) == 0) {
+                continue;
+            }
+            
+            // Redelegate to themselves (this will automatically move their voting power)
+            _delegate(delegator, delegator);
+            
+            // Remove from delegators list
+            removeFromDelegators(owner, delegator);
+            
+            // Emit event for frontend notifications
+            emit DelegationReturned(delegator, owner, block.timestamp);
+        }
+        
+        // Clear own delegation if delegated elsewhere
+        address currentDelegate = delegates(owner);
+        if (currentDelegate != address(0) && currentDelegate != owner) {
+            // Clear delegation (delegate to zero address)
+            // The _burn will handle moving voting power from currentDelegate to zero
+            _delegate(owner, address(0));
+        }
+    }
 
+    /**
+     * @dev User-initiated NFT burn with delegation cleanup
+     */
+    function burn() external nonReentrant {
+        uint256 tokenId = tokenOfOwner(msg.sender);
+        address owner = msg.sender;
+        
+        // Handle delegation cleanup before burning
+        _handleDelegationCleanup(owner);
+        
+        // Burn the NFT (this will automatically handle voting power transfer via _transferVotingUnits)
+        _burn(tokenId);
+        
+        // Reset hasMinted to allow re-minting
+        hasMinted[owner] = false;
+        
+        emit MemberRevoked(owner, tokenId);
+    }
+
+    /**
+     * @dev Authority-initiated NFT revocation with delegation cleanup
+     */
     function revoke(address member) external onlyRole(REVOKER_ROLE) {
         uint256 tokenId = tokenOfOwner(member);
+        
+        // Handle delegation cleanup before burning
+        _handleDelegationCleanup(member);
+        
+        // Burn the NFT (this will automatically handle voting power transfer via _transferVotingUnits)
         _burn(tokenId);
+        
+        // Reset hasMinted to allow re-minting
         hasMinted[member] = false;
+        
         emit MemberRevoked(member, tokenId);
     }
 
