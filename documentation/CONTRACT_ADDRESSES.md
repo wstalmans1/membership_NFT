@@ -21,7 +21,8 @@
 | **Constitution** | `0x87107551ef75e5e1eb89f79a47fee4184d3d9b12` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x87107551ef75e5e1eb89f79a47fee4184d3d9b12) |
 | **TreasuryExecutor** | `0x4d0eae63a10b91ee118ca4fd2b22e5552f4b2cca` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x4d0eae63a10b91ee118ca4fd2b22e5552f4b2cca) |
 | **DAOGovernor** | `0x86576b61dd6549d9af76f26b937fc7870d590321` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x86576b61dd6549d9af76f26b937fc7870d590321) |
-| **MembershipNFT** | `0x889ac10e5346faa142badc4a2e6ccb96dc17d878` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x889ac10e5346faa142badc4a2e6ccb96dc17d878) |
+| **MembershipNFT** | `0x1E1dEb14A4F39bdD79629D4238fA55b3E5Bc09c4` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x1E1dEb14A4F39bdD79629D4238fA55b3E5Bc09c4) |
+| **MembershipNFT (Old)** | `0x889ac10e5346faa142badc4a2e6ccb96dc17d878` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x889ac10e5346faa142badc4a2e6ccb96dc17d878) |
 
 ## Quick Verification Commands
 
@@ -57,12 +58,12 @@ forge verify-contract \
     "src/DAOGovernor.sol:DAOGovernor" \
     --constructor-args $(cast abi-encode "constructor()")
 
-# Verify MembershipNFT Implementation
+# Verify MembershipNFT Implementation (Current)
 forge verify-contract \
     --rpc-url $SEPOLIA_RPC_URL \
     --verifier blockscout \
     --verifier-url https://eth-sepolia.blockscout.com/api \
-    0x889ac10e5346faa142badc4a2e6ccb96dc17d878 \
+    0x1E1dEb14A4F39bdD79629D4238fA55b3E5Bc09c4 \
     "src/MembershipNFT.sol:MembershipNFT" \
     --constructor-args $(cast abi-encode "constructor()")
 

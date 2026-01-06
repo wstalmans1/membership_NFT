@@ -16,7 +16,8 @@ contract Deploy is Script {
     // --- Config: adjust as needed before running ---
     uint256 public minDonationWei = 0.01 ether;
     string public baseUri = "ipfs://base/";
-    address public revocationAuthority = msg.sender;
+    // NOTE: revocationAuthority is now set in run() function using deployer directly
+    // This avoids Foundry's DEFAULT_SENDER issue with state variable initialization
     uint256 public perTxSpendCapWei = 0.1 ether;
     uint256 public epochSpendCapWei = 0.3 ether;
     uint64 public epochDuration = 5 minutes;
@@ -33,6 +34,12 @@ contract Deploy is Script {
         address deployer = vm.addr(deployerKey);
 
         vm.startBroadcast(deployerKey);
+
+        // Set revocationAuthority to deployer address
+        // Using deployer directly instead of msg.sender to avoid Foundry's DEFAULT_SENDER
+        // (State variable initialization happens before vm.startBroadcast(), so msg.sender would be DEFAULT_SENDER)
+        address revocationAuthority = deployer;
+        console.log("Revocation Authority set to:", revocationAuthority);
 
         // Constitution
         Constitution implConst = new Constitution();

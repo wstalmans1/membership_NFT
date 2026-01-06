@@ -71,6 +71,9 @@ contract MembershipNFT is
         uint256 tokenId = _tokenIdTracker;
         _safeMint(msg.sender, tokenId);
 
+        // Auto-delegate to self to activate voting power
+        delegate(msg.sender);
+
         (bool sent,) = treasury.call{value: msg.value}("");
         require(sent, "Treasury transfer failed");
 
