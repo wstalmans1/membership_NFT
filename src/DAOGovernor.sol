@@ -151,8 +151,12 @@ contract DAOGovernor is
         return super.supportsInterface(interfaceId);
     }
 
+    // Allow timelock execution for description-only proposals (empty calldata to the governor).
+    receive() external payable override onlyGovernance {
+        require(msg.value == 0, "Governor: no ether");
+    }
+
     // --- Upgrade auth ---
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 }
-

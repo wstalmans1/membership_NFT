@@ -69,7 +69,7 @@ contract Deploy is Script {
         address[] memory executors = new address[](1);
         executors[0] = address(0); // anyone can execute
         TimelockControllerUpgradeable timelock = new TimelockControllerUpgradeable();
-        timelock.initialize(3, proposers, executors, deployer); // minDelay = 3 blocks
+        timelock.initialize(3, proposers, executors, deployer); // minDelay = 3 seconds
 
         // MembershipNFT
         MembershipNFT implMember = new MembershipNFT();
@@ -92,6 +92,11 @@ contract Deploy is Script {
         );
         DAOGovernor governor = DAOGovernor(payable(address(new ERC1967Proxy(address(implGov), govInit))));
 
+        // Grant governance execution roles to the timelock so queued proposals can execute.
+        constitution.grantRole(constitution.GOVERNANCE_ROLE(), address(timelock));
+        treasury.grantRole(treasury.EXECUTOR_ROLE(), address(timelock));
+        membership.grantRole(membership.TREASURY_ROLE(), address(timelock));
+
         // Log addresses
         console.log("Deployer", deployer);
         console.log("Constitution", address(constitution));
@@ -103,4 +108,3 @@ contract Deploy is Script {
         vm.stopBroadcast();
     }
 }
-

@@ -6,7 +6,10 @@
 
 ## Summary
 
-Upgraded the MembershipNFT contract to automatically delegate newly minted NFTs to the minter, activating voting power immediately upon minting.
+Upgraded the MembershipNFT contract with delegation tracking and cleanup functionality. This includes:
+1. Auto-delegation for newly minted NFTs (activating voting power immediately)
+2. On-chain delegator tracking
+3. Delegation cleanup when NFTs are burned or revoked
 
 ## Changes
 
@@ -14,24 +17,17 @@ Upgraded the MembershipNFT contract to automatically delegate newly minted NFTs 
 
 **File**: `src/MembershipNFT.sol`
 
-Added auto-delegation in the `mint()` function:
-
-```solidity
-function mint() external payable nonReentrant {
-    // ... existing mint logic ...
-    _safeMint(msg.sender, tokenId);
-    
-    // Auto-delegate to self to activate voting power
-    delegate(msg.sender);
-    
-    // ... rest of function ...
-}
-```
+**Key Features Added:**
+1. **Delegator Tracking**: Maps delegate addresses to lists of addresses that delegated to them
+2. **Delegation Cleanup**: Automatically handles delegation when NFTs are burned or revoked
+3. **Burn Function**: User-initiated NFT burning with delegation cleanup
+4. **Enhanced Revoke**: Authority-initiated revocation with delegation cleanup
 
 ### Implementation Addresses
 
 - **Old Implementation**: `0x889ac10e5346faa142badc4a2e6ccb96dc17d878`
-- **New Implementation**: `0x1E1dEb14A4F39bdD79629D4238fA55b3E5Bc09c4`
+- **Previous Implementation**: `0x1E1dEb14A4F39bdD79629D4238fA55b3E5Bc09c4` (auto-delegation only)
+- **Current Implementation**: `0xD39f23282Ab319C0D0Bf87B46B86a892EA0f3B1a` (delegation tracking + cleanup)
 - **Proxy Address**: `0x308bFFa77D93a7c37225De5bcEA492E95293DF29` (unchanged)
 
 ## Impact
@@ -72,7 +68,16 @@ If you want to help existing NFT holders, you can:
 
 ## Verification
 
-The new implementation contract has been verified on Sourcify:
-- Status: `exact_match`
-- Verification Job ID: `1c4486e5-7c32-47e9-81fa-31e28a39108b`
+### Previous Implementation (Auto-delegation)
+- **Address**: `0x1E1dEb14A4F39bdD79629D4238fA55b3E5Bc09c4`
+- **Status**: `exact_match` ✅
+- **Verification Job ID**: `1c4486e5-7c32-47e9-81fa-31e28a39108b`
+
+### Current Implementation (Delegation Tracking + Cleanup)
+- **Address**: `0xD39f23282Ab319C0D0Bf87B46B86a892EA0f3B1a`
+- **Status**: `exact_match` ✅ (Verified on 2026-01-06)
+- **Verification Job ID**: `b9dd6db6-72b7-46f7-9204-7d69d200e445`
+- **Match ID**: `13032067`
+- **View on Sourcify**: https://sourcify.dev/serverv2/verify/b9dd6db6-72b7-46f7-9204-7d69d200e445
+- **Also verified on**: Etherscan, Routescan, and Blockscout (via Sourcify integration)
 
