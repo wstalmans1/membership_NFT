@@ -96,15 +96,14 @@ The plugin uses the OpenZeppelin Upgrades CLI for validations, which requires No
 
 ### Clean Builds
 
-Before running upgrade scripts, always run:
+Before running upgrade scripts, always run a full clean build:
 ```bash
 forge clean
+forge build
 ```
 
-Or use the `--force` flag:
-```bash
-forge script ... --force
-```
+This prevents the upgrades CLI from seeing partial build-info files (which can happen if only a subset of sources
+recompiles during `forge script`).
 
 **Convenience Scripts:**
 
@@ -114,7 +113,7 @@ We provide shell script wrappers that automatically handle `forge clean`:
 - `./script/upgrade-membership.sh` - Upgrades MembershipNFT (use `VERIFY=true` prefix for verification)
 
 These scripts automatically:
-- Run `forge clean` before building
+- Run `forge clean` and `forge build` before upgrading
 - Load environment variables from `.env`
 - Handle sender address detection
 - Provide clear progress output

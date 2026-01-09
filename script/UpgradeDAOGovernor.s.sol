@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Script, console} from "forge-std/Script.sol";
 import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
+import {Options} from "openzeppelin-foundry-upgrades/Options.sol";
 
 /**
  * @title UpgradeDAOGovernor
@@ -36,7 +37,9 @@ contract UpgradeDAOGovernor is Script {
         // Options memory opts;
         // opts.referenceContract = "src/DAOGovernor.sol:DAOGovernor";
         // Upgrades.upgradeProxy(GOVERNOR_PROXY, "src/DAOGovernorV2.sol:DAOGovernorV2", "", opts);
-        Upgrades.upgradeProxy(GOVERNOR_PROXY, "src/DAOGovernor.sol:DAOGovernor", "");
+        Options memory opts;
+        opts.referenceContract = "DAOGovernorV1.sol:DAOGovernorV1";
+        Upgrades.upgradeProxy(GOVERNOR_PROXY, "DAOGovernor.sol:DAOGovernor", "", opts);
         console.log("Upgrade completed!");
 
         vm.stopBroadcast();

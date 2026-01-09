@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script to upgrade DAOGovernor proxy using OpenZeppelin Foundry Upgrades plugin
-# This script runs forge clean first to ensure fresh build artifacts for upgrade validation
+# This script runs forge clean + forge build to ensure full build artifacts for upgrade validation
 
 set -e
 
