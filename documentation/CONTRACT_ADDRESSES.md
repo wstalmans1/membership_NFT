@@ -18,7 +18,8 @@
 
 | Contract | Implementation Address | Blockscout Link |
 |----------|----------------------|----------------|
-| **Constitution** | `0x87107551ef75e5e1eb89f79a47fee4184d3d9b12` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x87107551ef75e5e1eb89f79a47fee4184d3d9b12) |
+| **Constitution** | `0x3DFDb92e5E40F142394b229475004B64c0c80052` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x3DFDb92e5E40F142394b229475004B64c0c80052) |
+| **Constitution (Previous)** | `0x87107551ef75e5e1eb89f79a47fee4184d3d9b12` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x87107551ef75e5e1eb89f79a47fee4184d3d9b12) |
 | **TreasuryExecutor** | `0x4d0eae63a10b91ee118ca4fd2b22e5552f4b2cca` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x4d0eae63a10b91ee118ca4fd2b22e5552f4b2cca) |
 | **DAOGovernor** | `0x6d387233bc3b04Fe3cEd13090c470438FD11b8D4` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x6d387233bc3b04Fe3cEd13090c470438FD11b8D4) |
 | **DAOGovernor (Previous)** | `0x3e855073fa698e723c06Da904FE05e6D00Ef874E` | [View on Blockscout](https://eth-sepolia.blockscout.com/address/0x3e855073fa698e723c06Da904FE05e6D00Ef874E) |

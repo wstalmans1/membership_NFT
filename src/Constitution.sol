@@ -93,7 +93,11 @@ contract Constitution is Initializable, AccessControlUpgradeable, UUPSUpgradeabl
         emit SpendCapsUpdated(perTxCapWei, epochCapWei, durationSeconds);
     }
 
-    function setRecipientAllowed(address account, bool allowed) external onlyRole(GOVERNANCE_ROLE) {
+    function setRecipientAllowed(address account, bool allowed) external virtual onlyRole(GOVERNANCE_ROLE) {
+        _setRecipientAllowed(account, allowed);
+    }
+
+    function _setRecipientAllowed(address account, bool allowed) internal {
         isRecipientAllowed[account] = allowed;
         emit RecipientAllowlistUpdated(account, allowed);
     }
